@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ninsin-keisan.vercel.app/sitemap.xml

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>妊娠週数・出産予定日計算ツール【無料】最終月経日から自動計算</title>
+<meta name="description" content="最終月経日または出産予定日を入力するだけで、今の妊娠週数・出産予定日・あと何日かを自動計算。赤ちゃんの成長記録や週ごとの発達情報も確認できます。">
+<link rel="canonical" href="https://ninsin-keisan.vercel.app/">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="妊娠週数・出産予定日計算ツール【無料】">
+<meta property="og:description" content="最終月経日を入力するだけで妊娠週数・出産予定日を自動計算。赤ちゃんの成長記録つき。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ninsin-keisan.vercel.app/">
+<meta property="og:image" content="https://ninsin-keisan.vercel.app/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "妊娠週数・出産予定日計算ツール",
+      "url": "https://ninsin-keisan.vercel.app/",
+      "description": "最終月経日から妊娠週数・出産予定日を自動計算する無料ツール",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+      "inLanguage": "ja"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "妊娠週数はどうやって計算するの？",
+          "acceptedAnswer": { "@type": "Answer", "text": "最終月経開始日を0日目として数えます。7日で1週とカウントし、「妊娠○週○日」と表します。出産予定日は最終月経開始日から280日後（40週0日）です。" }
+        },
+        {
+          "@type": "Question",
+          "name": "出産予定日の計算方法は？",
+          "acceptedAnswer": { "@type": "Answer", "text": "ネーゲレ概算法を使います。最終月経開始日の月に9を足す（または3を引く）、日に7を足すことで計算できます。このツールでは自動計算しています。" }
+        },
+        {
+          "@type": "Question",
+          "name": "正期産はいつから？",
+          "acceptedAnswer": { "@type": "Answer", "text": "妊娠37週0日〜41週6日が正期産です。この期間に生まれた赤ちゃんは正期産児と呼ばれます。37週未満は早産、42週以降は過期産となります。" }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3985655020038392" crossorigin="anonymous"></script>
+
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:     #f8f5ff;
+  --bg2:    #ffffff;
+  --pink:   #e88fa8;
+  --pink-l: #fce8f0;
+  --blue:   #7ab0d4;
+  --blue-l: #e0f0fc;
+  --purple: #9b7ec8;
+  --pur-l:  #f0e8ff;
+  --green:  #7aba8a;
+  --grn-l:  #e4f5e8;
+  --gold:   #c8a05a;
+  --gld-l:  #fdf0da;
+  --text:   #3a2a3e;
+  --text2:  #7a607e;
+  --text3:  #b09ab8;
+  --border: #e8d8f0;
+  --shadow: rgba(58,42,62,0.08);
+}
+body { background:var(--bg); color:var(--text); font-family:'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif; min-height:100vh; }
+
+/* ── ヘッダー ── */
+.site-header { background:var(--bg2); border-bottom:1px solid var(--border); padding:24px 16px 20px; text-align:center; box-shadow:0 2px 12px var(--shadow); }
+.header-icon { font-size:36px; margin-bottom:6px; }
+.site-header h1 { font-size:clamp(18px,5vw,26px); font-weight:700; color:var(--text); line-height:1.3; }
+.site-header h1 span { color:var(--pink); }
+.site-header p { font-size:12px; color:var(--text3); margin-top:5px; }
+
+/* ── レイアウト ── */
+#app { max-width:720px; margin:0 auto; padding:20px 16px 80px; }
+
+/* ── 広告 ── */
+.ad-area { background:var(--bg2); border:1px dashed var(--border); border-radius:8px; min-height:90px; display:flex; align-items:center; justify-content:center; color:var(--text3); font-size:11px; margin:16px 0; }
+
+/* ── カード共通 ── */
+.card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:24px 20px; margin-bottom:18px; box-shadow:0 2px 12px var(--shadow); }
+.card-title { font-size:13px; font-weight:700; color:var(--text2); letter-spacing:0.1em; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:6px; }
+
+/* ── 入力切替 ── */
+.mode-row { display:flex; gap:8px; margin-bottom:20px; }
+.mode-btn { flex:1; padding:10px; border:1.5px solid var(--border); border-radius:50px; background:var(--bg); color:var(--text2); font-size:13px; font-family:inherit; cursor:pointer; transition:all 0.15s; text-align:center; }
+.mode-btn.active { background:var(--pink-l); border-color:var(--pink); color:var(--pink); font-weight:700; }
+
+/* ── 入力 ── */
+.input-group { margin-bottom:16px; }
+.input-group label { display:block; font-size:12px; color:var(--text2); margin-bottom:6px; }
+.input-group input { width:100%; background:var(--bg); border:1.5px solid var(--border); border-radius:10px; color:var(--text); font-size:16px; padding:12px 16px; font-family:inherit; outline:none; transition:border-color 0.2s; }
+.input-group input:focus { border-color:var(--pink); }
+.btn-calc { width:100%; padding:15px; background:linear-gradient(135deg,var(--pink),var(--purple)); border:none; border-radius:50px; color:#fff; font-size:16px; font-weight:700; font-family:inherit; letter-spacing:0.1em; cursor:pointer; box-shadow:0 4px 20px rgba(232,143,168,0.35); transition:transform 0.15s; }
+.btn-calc:hover { transform:translateY(-2px); }
+
+/* ── 結果 ── */
+#result-area { display:none; }
+.result-hero { background:linear-gradient(135deg,var(--pink-l),var(--pur-l)); border:1px solid rgba(232,143,168,0.3); border-radius:20px; padding:28px 20px; text-align:center; margin-bottom:18px; }
+.result-week-label { font-size:12px; color:var(--pink); letter-spacing:0.2em; margin-bottom:6px; }
+.result-week { font-size:clamp(42px,12vw,64px); font-weight:900; color:var(--text); line-height:1; }
+.result-week span { font-size:0.45em; color:var(--text2); }
+.result-date-row { display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; justify-content:center; }
+.result-badge { background:rgba(255,255,255,0.7); border-radius:12px; padding:10px 16px; min-width:130px; }
+.result-badge-label { font-size:10px; color:var(--text3); margin-bottom:3px; }
+.result-badge-val { font-size:15px; font-weight:700; color:var(--text); }
+
+/* ── プログレスバー ── */
+.progress-wrap { margin-top:18px; }
+.progress-label { display:flex; justify-content:space-between; font-size:11px; color:var(--text3); margin-bottom:6px; }
+.progress-bar { background:rgba(255,255,255,0.6); border-radius:100px; height:10px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--pink),var(--purple)); transition:width 1s cubic-bezier(0.2,1,0.3,1); }
+.progress-stages { display:flex; justify-content:space-between; font-size:10px; color:var(--text3); margin-top:4px; }
+
+/* ── 赤ちゃんの成長 ── */
+.growth-card { background:linear-gradient(135deg,var(--grn-l),var(--blue-l)); border:1px solid rgba(122,186,138,0.3); }
+.growth-emoji { font-size:48px; text-align:center; margin-bottom:8px; }
+.growth-size { text-align:center; font-size:13px; color:var(--text2); margin-bottom:14px; }
+.growth-size strong { color:var(--green); font-size:16px; }
+.growth-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.growth-item { background:rgba(255,255,255,0.6); border-radius:12px; padding:12px; }
+.growth-item-label { font-size:10px; color:var(--text3); margin-bottom:4px; }
+.growth-item-text { font-size:12px; color:var(--text); line-height:1.7; }
+
+/* ── タイムライン ── */
+.timeline { position:relative; padding-left:24px; }
+.timeline::before { content:''; position:absolute; left:7px; top:0; bottom:0; width:2px; background:var(--border); }
+.tl-item { position:relative; margin-bottom:16px; }
+.tl-item::before { content:''; position:absolute; left:-20px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--border); border:2px solid var(--bg2); }
+.tl-item.passed::before { background:var(--pink); }
+.tl-item.current::before { background:var(--purple); box-shadow:0 0 0 3px var(--pur-l); }
+.tl-week { font-size:11px; color:var(--text3); margin-bottom:2px; }
+.tl-text { font-size:13px; color:var(--text); }
+.tl-item.passed .tl-text { color:var(--text2); }
+.tl-item.current .tl-text { color:var(--purple); font-weight:700; }
+
+/* ── 名前サイトへの導線 ── */
+.namae-banner { background:linear-gradient(135deg,#fce8f0,#f0e8ff); border:1px solid rgba(232,143,168,0.3); border-radius:20px; padding:24px 20px; text-align:center; margin-bottom:18px; }
+.namae-banner .icon { font-size:32px; margin-bottom:8px; }
+.namae-banner h3 { font-size:16px; color:var(--text); margin-bottom:6px; }
+.namae-banner p { font-size:13px; color:var(--text2); line-height:1.7; margin-bottom:16px; }
+.btn-namae { display:inline-block; padding:12px 32px; background:linear-gradient(135deg,var(--pink),var(--purple)); border-radius:50px; color:#fff; font-size:14px; font-weight:700; text-decoration:none; box-shadow:0 4px 16px rgba(232,143,168,0.35); transition:transform 0.15s; }
+.btn-namae:hover { transform:translateY(-2px); }
+
+/* ── SEOコンテンツ ── */
+.seo-section { font-size:14px; color:var(--text2); line-height:1.9; }
+.seo-section h2 { font-size:16px; color:var(--text); margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+.seo-section h3 { font-size:14px; color:var(--text); margin:16px 0 6px; font-weight:700; }
+.seo-section p { margin-bottom:10px; }
+.week-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
+.week-table th { background:var(--pink-l); color:var(--pink); padding:8px 10px; text-align:left; font-weight:700; }
+.week-table td { padding:8px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+.week-table tr:last-child td { border-bottom:none; }
+
+/* ── フッター ── */
+footer { text-align:center; padding:32px 16px 20px; color:var(--text3); font-size:11px; line-height:1.8; }
+footer a { color:var(--text3); }
+
+@media(max-width:420px) {
+  .growth-grid { grid-template-columns:1fr; }
+  .result-date-row { flex-direction:column; align-items:center; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-icon">🍼</div>
+  <h1>妊娠<span>週数</span>・出産<span>予定日</span>計算ツール</h1>
+  <p>最終月経日を入力するだけで自動計算・赤ちゃんの成長記録つき</p>
+</header>
+
+<div id="app">
+
+  <!-- 広告（上） -->
+  <div class="ad-area">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3985655020038392" data-ad-slot="9624849394" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-title">📅 入力方法を選んでください</div>
+    <div class="mode-row">
+      <button class="mode-btn active" id="mode-lmp" onclick="setMode('lmp')">最終月経開始日から</button>
+      <button class="mode-btn" id="mode-due" onclick="setMode('due')">出産予定日から</button>
+    </div>
+    <div id="input-lmp">
+      <div class="input-group">
+        <label>最終月経開始日（最後に生理が始まった日）</label>
+        <input type="date" id="lmp-date">
+      </div>
+    </div>
+    <div id="input-due" style="display:none">
+      <div class="input-group">
+        <label>出産予定日（病院で告げられた日）</label>
+        <input type="date" id="due-date">
+      </div>
+    </div>
+    <button class="btn-calc" onclick="calculate()">🍼 計算する</button>
+  </div>
+
+  <!-- 結果エリア -->
+  <div id="result-area">
+
+    <!-- メイン結果 -->
+    <div class="result-hero">
+      <div class="result-week-label">✦ 現在の妊娠週数 ✦</div>
+      <div class="result-week" id="r-week">-- <span>週 -- 日</span></div>
+      <div class="result-date-row">
+        <div class="result-badge">
+          <div class="result-badge-label">出産予定日</div>
+          <div class="result-badge-val" id="r-due">----/--/--</div>
+        </div>
+        <div class="result-badge">
+          <div class="result-badge-label">あと</div>
+          <div class="result-badge-val" id="r-left">-- 日</div>
+        </div>
+        <div class="result-badge">
+          <div class="result-badge-label">妊娠期</div>
+          <div class="result-badge-val" id="r-period">--期</div>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>妊娠4週</span>
+          <span id="r-pct">0%</span>
+          <span>40週（出産）</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="r-bar" style="width:0%"></div></div>
+        <div class="progress-stages">
+          <span>初期</span>
+          <span>中期(16週)</span>
+          <span>後期(28週)</span>
+          <span>正期産(37週)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 広告（結果中） -->
+    <div class="ad-area">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3985655020038392" data-ad-slot="9624849394" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <!-- 赤ちゃんの成長 -->
+    <div class="card growth-card">
+      <div class="card-title">🌱 今週の赤ちゃん</div>
+      <div class="growth-emoji" id="g-emoji">🌱</div>
+      <div class="growth-size">大きさの目安：<strong id="g-size">--</strong>（約 <span id="g-mm">--</span>）</div>
+      <div class="growth-grid">
+        <div class="growth-item">
+          <div class="growth-item-label">👶 赤ちゃんの発達</div>
+          <div class="growth-item-text" id="g-baby">--</div>
+        </div>
+        <div class="growth-item">
+          <div class="growth-item-label">🤱 ママの体の変化</div>
+          <div class="growth-item-text" id="g-mama">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 妊娠タイムライン -->
+    <div class="card">
+      <div class="card-title">📋 妊娠タイムライン</div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <!-- 名前サイトへの導線 -->
+    <div class="namae-banner">
+      <div class="icon">🌸</div>
+      <h3>赤ちゃんの名前、考えてみませんか？</h3>
+      <p>季節・自然・万葉集などのテーマから<br>ぴったりの名前候補が見つかります。</p>
+      <a href="https://namae-compass.vercel.app/" class="btn-namae" target="_blank">🌸 名前ジェネレーターを見る</a>
+    </div>
+
+    <!-- 広告（下） -->
+    <div class="ad-area">
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3985655020038392" data-ad-slot="9624849394" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+  </div><!-- /result-area -->
+
+  <!-- SEOコンテンツ -->
+  <div class="card seo-section">
+    <h2>妊娠週数の数え方について</h2>
+    <p>妊娠週数は<strong>最終月経開始日を0日目</strong>として数えます。7日で1週が経過し、「妊娠〇週〇日」と表します。出産予定日は最終月経開始日から<strong>280日後（40週0日）</strong>です。</p>
+    <h3>妊娠期間の区分</h3>
+    <table class="week-table">
+      <tr><th>時期</th><th>週数</th><th>特徴</th></tr>
+      <tr><td>初期</td><td>〜15週</td><td>つわりがある時期。流産リスクが比較的高い。</td></tr>
+      <tr><td>中期</td><td>16〜27週</td><td>安定期。胎動を感じ始める。</td></tr>
+      <tr><td>後期</td><td>28〜36週</td><td>お腹が大きくなり体が重くなる。</td></tr>
+      <tr><td>正期産</td><td>37〜41週</td><td>いつ産まれてもOKな時期。</td></tr>
+    </table>
+    <h3>よくある質問</h3>
+    <p><strong>Q. 病院の週数と違う場合は？</strong><br>
+    エコー検査による赤ちゃんの大きさから週数が修正されることがあります。病院で告げられた出産予定日を優先してください。「出産予定日から計算」モードをお使いください。</p>
+    <p><strong>Q. 正期産はいつから？</strong><br>
+    妊娠<strong>37週0日〜41週6日</strong>が正期産です。37週未満は早産、42週以降は過期産となります。</p>
+  </div>
+
+</div>
+
+<footer>
+  &copy; 2026 妊娠週数・出産予定日計算ツール<br>
+  ※ 本ツールの計算結果は目安です。正確な情報は必ず医師にご確認ください。<br>
+  <a href="./privacy.html">プライバシーポリシー</a> ／
+  <a href="./contact.html">お問い合わせ</a>
+</footer>
+
+<script>
+// ── 週ごとの成長データ ──────────────────────────────
+const WEEK_DATA = {
+  4:  { emoji:'🌱', size:'ケシ粒', mm:'1〜2mm', baby:'受精卵が子宮に着床。心臓・脳の原型が形成され始めます。', mama:'生理が来ない頃。妊娠検査薬が反応し始めます。' },
+  5:  { emoji:'🫘', size:'ゴマ粒', mm:'約3mm',  baby:'心臓が動き始めます。手足・脳・脊髄の原型が形成されます。', mama:'つわりが始まる場合があります。眠気・疲れを感じやすい。' },
+  6:  { emoji:'🫛', size:'ブルーベリー', mm:'約6mm', baby:'手足の芽が出てきます。心音が確認できるようになります。', mama:'つわりがピークに向かいます。においに敏感になる方が多い。' },
+  7:  { emoji:'🫐', size:'ブルーベリー', mm:'約10mm', baby:'顔の輪郭・目・耳が形成されます。脳が急発達中。', mama:'乳房の張りや頻尿が現れることがあります。' },
+  8:  { emoji:'🍓', size:'イチゴ', mm:'約16mm', baby:'指の形ができてきます。活発に動き始めますが、まだ動きは感じません。', mama:'体重が増え始める頃。つわりが続く方が多い。' },
+  9:  { emoji:'🍇', size:'ぶどう1粒', mm:'約23mm', baby:'すべての主要器官が形成されます。赤ちゃんの形がはっきりしてきます。', mama:'子宮が拳大に。下腹部の重さを感じる場合があります。' },
+  10: { emoji:'🍑', size:'さくらんぼ', mm:'約32mm', baby:'爪・骨・関節が形成され始めます。飲み込む練習を始めます。', mama:'つわりが少しずつ落ち着いてくる方も。' },
+  11: { emoji:'🍋', size:'いちじく', mm:'約45mm', baby:'外性器が形成され始めます。全身の筋肉が発達中。', mama:'子宮がさらに大きく。お腹の出方が人によって異なります。' },
+  12: { emoji:'🍊', size:'ライム', mm:'約58mm', baby:'声帯が形成されます。顔の表情筋ができてきます。', mama:'もうすぐ安定期。胎盤がほぼ完成します。' },
+  13: { emoji:'🍊', size:'みかん', mm:'約73mm', baby:'指紋が形成されます。男女の外性器がはっきりしてきます。', mama:'初期スクリーニング検査の時期。体調が安定してくる方が多い。' },
+  14: { emoji:'🍎', size:'桃（小）', mm:'約87mm', baby:'全身に産毛（胎毛）が生え始めます。吸指行動が見られます。', mama:'安定期に入ります。つわりが落ち着く方が多い。' },
+  15: { emoji:'🍎', size:'りんご', mm:'約10cm', baby:'骨格がしっかりしてきます。眉毛・まつ毛が生え始めます。', mama:'お腹が目立ち始める頃。マタニティウェアの準備を。' },
+  16: { emoji:'🥑', size:'アボカド', mm:'約12cm', baby:'聴覚が発達し、外の音が聞こえ始めます。光を感じることができます。', mama:'胎動を感じ始める方も。お腹の膨らみが顕著になります。' },
+  17: { emoji:'🍐', size:'洋梨', mm:'約13cm', baby:'皮下脂肪が蓄積され始めます。体の動きがより活発に。', mama:'中期スクリーニング検査の時期。腰痛が出始める方も。' },
+  18: { emoji:'🥭', size:'マンゴー', mm:'約14cm', baby:'性別がエコーで確認できることが多い時期。耳がほぼ完成。', mama:'胎動をはっきり感じる方が増えます。逆流性食道炎に注意。' },
+  19: { emoji:'🍑', size:'マンゴー（大）', mm:'約15cm', baby:'脳が急発達。感覚器官（聴覚・視覚・味覚・嗅覚）が急成長。', mama:'お腹の重さで歩きにくくなる方も。無理のない運動を。' },
+  20: { emoji:'🍌', size:'バナナ', mm:'約16cm', baby:'飲み込んだ羊水を腎臓でろ過します。体重増加が始まります。', mama:'妊娠の折り返し点。ここから体重管理が重要になります。' },
+  21: { emoji:'🥕', size:'にんじん', mm:'約27cm', baby:'味覚が発達。羊水の味を感じています。筋肉が強くなります。', mama:'胎動がはっきりわかる時期。貧血に注意して食事を。' },
+  22: { emoji:'🌽', size:'とうもろこし', mm:'約28cm', baby:'皮膚の発達が続きます。まだしわしわですが脂肪を蓄積中。', mama:'子宮が大きくなり胃が圧迫されます。少量ずつ食べましょう。' },
+  23: { emoji:'🍆', size:'なす', mm:'約29cm', baby:'肺の発達が進みます。ただし体外では呼吸困難です。', mama:'足がつる（こむら返り）が起きやすい。水分・カリウムを摂取。' },
+  24: { emoji:'🌽', size:'とうもろこし（大）', mm:'約30cm', baby:'顔のパーツが整い、生まれた時とほぼ同じ顔に。', mama:'糖負荷試験（妊娠糖尿病検査）の時期。' },
+  25: { emoji:'🥦', size:'ブロッコリー', mm:'約34cm', baby:'頭皮の毛が生えてきます。脊椎が急成長。', mama:'お腹の張りを感じることが増えます。無理は禁物。' },
+  26: { emoji:'🥬', size:'レタス', mm:'約36cm', baby:'まぶたがほぼ完成。目を閉じたり開いたりします。', mama:'後期に向けて体が準備を始めます。骨盤ベルトを活用。' },
+  27: { emoji:'🥦', size:'カリフラワー', mm:'約37cm', baby:'生存に必要な機能がほぼ揃います（早産でも治療次第で生存可能に）。', mama:'お腹が大きく動きにくくなります。横向き寝がおすすめ。' },
+  28: { emoji:'🍆', size:'なす（大）', mm:'約38cm', baby:'免疫物質（抗体）をもらい始めます。脳が急成長。', mama:'後期に入りました。むくみ・静脈瘤に注意。' },
+  29: { emoji:'🎃', size:'スカッシュ', mm:'約39cm', baby:'骨格がしっかりしてきます。体重が急増え中。', mama:'仰向けで寝ると息苦しい場合も。左側を下に寝ましょう。' },
+  30: { emoji:'🥬', size:'大きなキャベツ', mm:'約40cm', baby:'骨髄が赤血球を作り始めます。体重が1.3kgほどに。', mama:'おなかが大きく腰痛がひどくなる場合も。マタニティ水泳もおすすめ。' },
+  31: { emoji:'🥦', size:'大きなブロッコリー', mm:'約41cm', baby:'全臓器がほぼ完成。皮下脂肪がついてふっくらしてきます。', mama:'出産準備を始める時期。入院バッグの準備を。' },
+  32: { emoji:'🎃', size:'大きなかぼちゃ', mm:'約42cm', baby:'頭が下になる頭位に移行する赤ちゃんが多い時期。', mama:'逆子の場合は医師に相談を。頻繁なおなかの張りに注意。' },
+  33: { emoji:'🍍', size:'パイナップル', mm:'約43cm', baby:'脳の発達がほぼ完成。肺の成熟が進みます。', mama:'息切れ・動悸が出やすい。ゆっくり行動を。' },
+  34: { emoji:'🍍', size:'大きなパイナップル', mm:'約45cm', baby:'肺がほぼ完成。体重が2kgを超える赤ちゃんが多い。', mama:'そろそろ出産準備完了を目指しましょう。' },
+  35: { emoji:'🎂', size:'蜂の巣かぼちゃ', mm:'約47cm', baby:'ほぼ新生児と同じ大きさ。内臓・神経系が完成に近い。', mama:'出産の兆候（おしるし・陣痛）に備えて。' },
+  36: { emoji:'🍉', size:'西瓜（小）', mm:'約48cm', baby:'皮膚が滑らかになってきます。体重が2.5〜3kgほどに。', mama:'もうすぐ正期産。体の準備が進んでいます。' },
+  37: { emoji:'🍉', size:'西瓜（中）', mm:'約49cm', baby:'正期産に入りました。肺・消化器系がほぼ完成。', mama:'いつ産まれてもOK！おしるし・陣痛に注意して。' },
+  38: { emoji:'🍉', size:'西瓜', mm:'約50cm', baby:'体重が3kgほどに。ほぼ新生児と同じ状態で誕生を待っています。', mama:'胎動の回数を確認しながら出産の準備をしましょう。' },
+  39: { emoji:'🍉', size:'大きな西瓜', mm:'約51cm', baby:'もうすぐ誕生！全身の機能が完成しています。', mama:'子宮口が開き始めます。無理せず過ごしましょう。' },
+  40: { emoji:'👶', size:'平均的な新生児', mm:'約50cm', baby:'出産予定日です！元気に誕生してくれるのを待っています。', mama:'予定日はあくまで目安。前後2週間は正常範囲です。' },
+};
+
+// ── タイムラインのマイルストーン ─────────────────────
+const MILESTONES = [
+  { week:5,  text:'心拍確認のエコー検査' },
+  { week:10, text:'母子手帳の交付申請' },
+  { week:12, text:'NT検査・初期スクリーニング' },
+  { week:14, text:'安定期（初期終了）' },
+  { week:16, text:'中期スクリーニング検査' },
+  { week:18, text:'性別がわかることが多い' },
+  { week:20, text:'妊娠の折り返し点🎉' },
+  { week:24, text:'妊娠糖尿病検査' },
+  { week:28, text:'後期に突入' },
+  { week:32, text:'逆子チェック・出産準備スタート' },
+  { week:36, text:'GBS検査・出産準備完了' },
+  { week:37, text:'正期産に突入🎊' },
+  { week:40, text:'出産予定日🍼' },
+];
+
+// ── モード切替 ────────────────────────────────────────
+function setMode(mode) {
+  document.getElementById('input-lmp').style.display = mode === 'lmp' ? 'block' : 'none';
+  document.getElementById('input-due').style.display = mode === 'due' ? 'block' : 'none';
+  document.getElementById('mode-lmp').classList.toggle('active', mode === 'lmp');
+  document.getElementById('mode-due').classList.toggle('active', mode === 'due');
+}
+
+// ── 計算 ───────────────────────────────────────────────
+function calculate() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let lmp;
+
+  const modeIsLmp = document.getElementById('mode-lmp').classList.contains('active');
+  if (modeIsLmp) {
+    const val = document.getElementById('lmp-date').value;
+    if (!val) { alert('最終月経開始日を入力してください'); return; }
+    lmp = new Date(val);
+  } else {
+    const val = document.getElementById('due-date').value;
+    if (!val) { alert('出産予定日を入力してください'); return; }
+    lmp = new Date(new Date(val).getTime() - 280 * 86400000);
+  }
+
+  const dueDate  = new Date(lmp.getTime() + 280 * 86400000);
+  const diffDays = Math.floor((today - lmp) / 86400000);
+  const weeks    = Math.floor(diffDays / 7);
+  const days     = diffDays % 7;
+  const daysLeft = Math.max(0, Math.floor((dueDate - today) / 86400000));
+  const pct      = Math.min(100, Math.max(0, Math.round((diffDays / 280) * 100)));
+
+  const period = weeks < 16 ? '初期' : weeks < 28 ? '中期' : weeks < 37 ? '後期' : '正期産';
+
+  // メイン表示
+  document.getElementById('r-week').innerHTML = `${weeks}<span>週 ${days}日</span>`;
+  document.getElementById('r-due').textContent  = fmt(dueDate);
+  document.getElementById('r-left').textContent = daysLeft > 0 ? `${daysLeft} 日` : '出産予定日を過ぎました';
+  document.getElementById('r-period').textContent = period;
+  document.getElementById('r-pct').textContent  = pct + '%';
+  setTimeout(() => { document.getElementById('r-bar').style.width = pct + '%'; }, 100);
+
+  // 成長データ
+  const w = Math.min(40, Math.max(4, weeks));
+  const gd = WEEK_DATA[w] || WEEK_DATA[40];
+  document.getElementById('g-emoji').textContent  = gd.emoji;
+  document.getElementById('g-size').textContent   = gd.size;
+  document.getElementById('g-mm').textContent     = gd.mm;
+  document.getElementById('g-baby').textContent   = gd.baby;
+  document.getElementById('g-mama').textContent   = gd.mama;
+
+  // タイムライン
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = MILESTONES.map(m => {
+    const cls = m.week < weeks ? 'passed' : m.week === weeks ? 'current' : '';
+    const date = new Date(lmp.getTime() + m.week * 7 * 86400000);
+    return `<div class="tl-item ${cls}">
+      <div class="tl-week">${m.week}週 (${fmt(date)}頃)</div>
+      <div class="tl-text">${cls === 'passed' ? '✓ ' : cls === 'current' ? '▶ 今ここ！ ' : ''}${m.text}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('result-area').style.display = 'block';
+  document.getElementById('result-area').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function fmt(d) {
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+}
+
+// 今日の日付をデフォルトにセット
+(function() {
+  const today = new Date();
+  const dd = d => String(d).padStart(2,'0');
+  const todayStr = `${today.getFullYear()}-${dd(today.getMonth()+1)}-${dd(today.getDate())}`;
+  // 最終月経日のデフォルトは4週前くらい
+  const lmpDef = new Date(today.getTime() - 28 * 86400000);
+  document.getElementById('lmp-date').value = `${lmpDef.getFullYear()}-${dd(lmpDef.getMonth()+1)}-${dd(lmpDef.getDate())}`;
+  document.getElementById('due-date').max = new Date(today.getTime() + 300 * 86400000).toISOString().split('T')[0];
+  document.getElementById('due-date').min = todayStr;
+})();
+</script>
+</body>
+</html>
